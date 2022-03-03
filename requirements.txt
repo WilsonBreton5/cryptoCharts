@@ -1,0 +1,13 @@
+dash==2.2.0
+dash_bootstrap_components==1.0.3
+matplotlib==3.5.1
+mplcursors==0.5.1
+numpy==1.22.2
+pandas==1.4.1
+plotly==5.6.0
+pyparsing==3.0.7
+Quandl==3.7.0
+requests==2.27.1
+scikit_learn==1.0.2
+scipy==1.8.0
+yfinance==0.1.70
