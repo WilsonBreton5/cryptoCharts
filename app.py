@@ -1,3 +1,4 @@
+from cmath import exp
 from tkinter import VERTICAL
 from turtle import width
 import urllib.request
@@ -22,8 +23,8 @@ fng_df = pd.DataFrame(data["data"])
 df = quandl.get('BCHAIN/MKPRU', api_key='FYzyusVT61Y4w65nFESX').reset_index()
 
 
-url = "https://api.nomics.com/v1/market-cap/history?key=45a204e26b47d3efe8fb2d3d64b60e4ff33736f9&start=2010-04-14T00%3A00%3A00Z&end=2022-05-14T00%3A00%3A00Z"
-mrkt_df = pd.read_json(url)
+#url = "https://api.nomics.com/v1/market-cap/history?key=45a204e26b47d3efe8fb2d3d64b60e4ff33736f9&start=2010-04-14T00%3A00%3A00Z&end=2022-05-14T00%3A00%3A00Z"
+#mrkt_df = pd.read_json(url)
 
 
 
@@ -49,23 +50,12 @@ df['avg'] = (df['Preavg'] - df['Preavg'].cummin()) / (df['Preavg'].cummax() - df
 
 
 app = Dash(__name__, suppress_callback_exceptions=True, 
-           external_stylesheets=[dbc.themes.BOOTSTRAP], meta_tags=[
+           external_stylesheets=[dbc.themes.CYBORG], meta_tags=[
                {"name": "viewport", "content": "width=device-width, initial-scale=1"},
            ],)
 server = app.server
 
-navbar = dbc.NavbarSimple(
-    children=[
-        dbc.NavItem(dbc.NavLink("Backtest", href="#")),
-        dbc.NavItem(dbc.NavLink("Page 2", href="#")),
-        dbc.NavItem(dbc.NavLink("Page 3", href="#")),
-        
-    ],
-    brand='yeboi',
-    brand_href="#",
-    color="primary",
-    dark=True,
-)
+
 navbar2 = dbc.Container(
     dbc.Navbar(
         [
@@ -74,9 +64,9 @@ navbar2 = dbc.Container(
                 dbc.Nav(
                 [
 
-                    html.H5('Total Crypto Market Charts'),
-                    dbc.NavItem(dbc.NavLink("Total Market Cap Logarithmic Regression",
-                                            active="exact", href="/")),
+                    # html.H5('Total Crypto Market Charts'),
+                    # dbc.NavItem(dbc.NavLink("Total Market Cap Logarithmic Regression",
+                    #                         active="exact", href="/")),
                     html.H5('Bitcoin Charts'),
                     dbc.NavItem(dbc.NavLink("Risk Metric",
                                             active="exact", href="/btc_risk")),
@@ -90,8 +80,8 @@ navbar2 = dbc.Container(
                                             active="exact", href="/btc_fear_greed")),
                     dbc.NavItem(dbc.NavLink("BTC Cowen Corridor",
                                             active="exact", href="/btc_cowen_corridor")),
-                    dbc.NavItem(dbc.NavLink("BTC Logarithmic Regression",
-                                           active="exact", href="/btc_log_reg")),
+                    # dbc.NavItem(dbc.NavLink("BTC Logarithmic Regression",
+                    #                        active="exact", href="/btc_log_reg")),
 
                     html.H5('Bitcoin ROI Charts'),
                     dbc.NavItem(dbc.NavLink("BTC ROI From Market Cycle Bottom",
@@ -103,22 +93,22 @@ navbar2 = dbc.Container(
                     dbc.NavItem(dbc.NavLink("BTC Monthly Returns",
                                             active="exact", href="/btc_monthly_roi")),
 
-                    html.H5('Ethereum Charts'),
-                    dbc.NavItem(dbc.NavLink("ETH Logarithmic Regression",
-                                            active="exact", href="/eth_log_reg")),
-                    dbc.NavItem(dbc.NavLink("ETH Logarithmic Regression Rainbow",
-                                            active="exact", href="/eth_log_rainbow")),
+                    # html.H5('Ethereum Charts'),
+                    # dbc.NavItem(dbc.NavLink("ETH Logarithmic Regression",
+                    #                         active="exact", href="/eth_log_reg")),
+                    # dbc.NavItem(dbc.NavLink("ETH Logarithmic Regression Rainbow",
+                    #                         active="exact", href="/eth_log_rainbow")),
             
                     
-                    html.H5('Ethereum ROI Charts'),
-                    dbc.NavItem(dbc.NavLink("ETH ROI From Market Cycle Bottom",
-                                            active="exact", href="/eth_from_cycle_bottom")),
-                    dbc.NavItem(dbc.NavLink("ETH Sub-Cycle ROI",
-                                            active="exact", href="/eth_subcycle_roi")),
-                    #dbc.NavItem(dbc.NavLink("ETH Running ROI",
-                     #                       active="exact", href="/btc_from_peak")),
-                    dbc.NavItem(dbc.NavLink("ETH Monthly ROI",
-                                            active="exact", href="/eth_monthly_roi")),
+                    # html.H5('Ethereum ROI Charts'),
+                    # dbc.NavItem(dbc.NavLink("ETH ROI From Market Cycle Bottom",
+                    #                         active="exact", href="/eth_from_cycle_bottom")),
+                    # dbc.NavItem(dbc.NavLink("ETH Sub-Cycle ROI",
+                    #                         active="exact", href="/eth_subcycle_roi")),
+                    # #dbc.NavItem(dbc.NavLink("ETH Running ROI",
+                    #  #                       active="exact", href="/btc_from_peak")),
+                    # dbc.NavItem(dbc.NavLink("ETH Monthly ROI",
+                    #                         active="exact", href="/eth_monthly_roi")),
 
                     
 
@@ -129,25 +119,25 @@ navbar2 = dbc.Container(
                 
                 
 
-            ),
-                
+                ),
                 id="navbar-collapse",
                 is_open=False,
                 navbar=True,
-                style={'align-items': 'start'}
+                style={'align-items': 'start'},
+
                 
                 
             ),
             
                 
         ],
-        class_name='flex-sm-column flex-row flex-grow-1 align-items-sm-start px-3 pt-2 text-white',
+        expand='xl',
         color="dark",
         dark=True,
     
     ),
     
-    class_name='col-12 col-sm-3 col-xl-2 px-sm-2 px-0 bg-dark d-flex sticky-top',
+    class_name='col-xl-2 d-flex',
    
 )
 
@@ -170,13 +160,14 @@ header = dbc.Container(
         dbc.Row(
             [ 
                 dbc.Col(
-                    html.H5(f"Risk level: {round(df['avg'].iloc[-1], 2)}"),
+                    html.H5(
+                        f"Risk level: {round(df['avg'].iloc[-1], 2)}", style={'color': 'red'}),
                 ),
                 dbc.Col(
-                    html.H5(f"Price: ${round(btcdata['Close'][-1])}"),
+                    html.H5(f"Price: ${round(btcdata['Close'][-1])} USD",style={'color': 'green'}),
                 ),
                 dbc.Col(
-                    html.H5(f"Fear & Greed: {fng_df['value'][0]}"),
+                    html.H5(f"Fear & Greed: {fng_df['value'][0]}", style={'color':'blue'}),
                 ),
                 dbc.Col(
                     html.P(f"Updated: {btcdata.index[-1]}"),
@@ -202,13 +193,13 @@ page_content = dbc.Container(
 # Convert to dictionary to store in memory
 df = df.to_dict()
 fng_df = fng_df.to_dict()
-mrkt_df = mrkt_df.to_dict()
+#mrkt_df = mrkt_df.to_dict()
 
 app.layout = html.Div(
     [
         dcc.Store(id="df-data", data=df),
         dcc.Store(id="fng-data", data=fng_df),
-        dcc.Store(id="mrkt_df-data", data=mrkt_df),
+        #dcc.Store(id="mrkt_df-data", data=mrkt_df),
     
         dcc.Location(id='url', refresh=False),
         

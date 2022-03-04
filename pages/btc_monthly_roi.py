@@ -3,6 +3,7 @@ import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import dash_bootstrap_components as dbc
+import dash_pivottable as dp
 
 
 
@@ -40,21 +41,13 @@ def monthly_roi(data):
                     showgrid=False, secondary_y=True)
     fig.update_layout(template="plotly_dark", title={})
 
-    months =['January', 'February', 'March', 'April', 'May', 'June', 'July',
-        'August', 'September', 'October', 'November', 'December']
-
-
+    
+    
     
     
 
-    # fig2 = go.Figure(data=[go.Table(
-    #     header=dict(values=['Date', 'Month ROI'],
-    #                 align='center'),
-    #     cells=dict(values=[list(df['Date'][dti]), list(df['monthly-roi'][dti])],
-    #                align='center'))
-    # ])
-    # fig2.update_layout(template='plotly_dark', title={
-    #     'text': 'Monthly ROI based on Month', 'y': 0.9, 'x': 0.5})
+
+    
 
     return dcc.Graph(figure=fig, responsive=True, style={'height': '90vh'})
 
