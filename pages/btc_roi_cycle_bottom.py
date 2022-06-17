@@ -58,6 +58,7 @@ def monthly_roi(data):
     fig.add_trace(go.Scatter(y=df['cycle2'].cumsum().dropna(), name='cycle2', line=dict(color='orange')))
     fig.add_trace(go.Scatter(y=df['cycle3'].cumsum().dropna(), name='cycle3', line=dict(color='yellow')))
     fig.add_trace(go.Scatter(y=df['cycle4'].cumsum().dropna(), name='cycle4', line=dict(color='purple')))
+    
     fig.update_xaxes(type='linear',range=[0,2000],title="Days Since Bottom")
     fig.update_yaxes(type='linear', title='ROI')
     fig.update_layout(template="plotly_dark")

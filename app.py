@@ -4,7 +4,7 @@ from turtle import width
 import urllib.request
 from dash import Dash, dcc, html, Input, Output, callback, State
 import numpy as np
-from pages import mrkt_total_log_reg, btc_log_reg,btc_roi_from_peak, btc_roi_from_halving, btc_roi_cycle_bottom, btc_monthly_roi, btc_cowen_corridor, btc_fair_value, btc_rainbowgraph, btc_risk, btc_riskpricechart, btc_fear_greed, btc_roi_from_halving
+from pages import   ada_risk, ethbtc_risk, mrkt_total_log_reg, btc_log_reg,btc_roi_from_peak, btc_roi_from_halving, btc_roi_cycle_bottom, btc_monthly_roi, btc_cowen_corridor, btc_fair_value, btc_rainbowgraph, btc_risk, btc_riskpricechart, btc_fear_greed, btc_roi_from_halving
 from datetime import date
 import pandas as pd
 import quandl
@@ -21,7 +21,7 @@ fng_df = pd.DataFrame(data["data"])
 
 # Download historical data from Quandl
 df = quandl.get('BCHAIN/MKPRU', api_key='FYzyusVT61Y4w65nFESX').reset_index()
-
+ada_df = yf.download(tickers='ADA-USD', period="max").reset_index()[["Date", "Close"]]
 
 #url = "https://api.nomics.com/v1/market-cap/history?key=45a204e26b47d3efe8fb2d3d64b60e4ff33736f9&start=2010-04-14T00%3A00%3A00Z&end=2022-05-14T00%3A00%3A00Z"
 #mrkt_df = pd.read_json(url)
@@ -33,6 +33,9 @@ df.sort_values(by='Date', inplace=True)
 
 # Get the last price against USD
 btcdata = yf.download(tickers='BTC-USD', period='1d', interval='1m')
+eth_df = yf.download(tickers='ETH-BTC',period='max', interval='1d').reset_index()
+print(eth_df)
+
 
 # Append the latest price data to the dataframe
 df.loc[df.index[-1]+1] = [date.today(), btcdata['Close'].iloc[-1]]
@@ -93,7 +96,9 @@ navbar2 = dbc.Container(
                     dbc.NavItem(dbc.NavLink("BTC Monthly Returns",
                                             active="exact", href="/btc_monthly_roi")),
 
-                    # html.H5('Ethereum Charts'),
+                    html.H5('Ethereum Charts'),
+                    dbc.NavItem(dbc.NavLink("ETH/BTC Risk",
+                                            active="exact", href="/ethbtc_risk")),
                     # dbc.NavItem(dbc.NavLink("ETH Logarithmic Regression",
                     #                         active="exact", href="/eth_log_reg")),
                     # dbc.NavItem(dbc.NavLink("ETH Logarithmic Regression Rainbow",
@@ -109,7 +114,8 @@ navbar2 = dbc.Container(
                     #  #                       active="exact", href="/btc_from_peak")),
                     # dbc.NavItem(dbc.NavLink("ETH Monthly ROI",
                     #                         active="exact", href="/eth_monthly_roi")),
-
+                    html.H5('ADA Charts'),
+                    dbc.NavItem(dbc.NavLink("ADA Risk",active="exact", href="/ada_risk")),
                     
 
 
@@ -191,17 +197,26 @@ page_content = dbc.Container(
     class_name='col d-flex flex-column h-sm-100'
 )
 # Convert to dictionary to store in memory
+
 df = df.to_dict()
 fng_df = fng_df.to_dict()
+ada_df = ada_df.to_dict()
+eth_df = eth_df.to_dict()
 #mrkt_df = mrkt_df.to_dict()
 
+
 app.layout = html.Div(
-    [
+    [   
+        dcc.Location(id='url', refresh=False),
+
+        dcc.Store(id='eth-data', data=eth_df),
+        dcc.Store(id='ada-data',data=ada_df),
         dcc.Store(id="df-data", data=df),
         dcc.Store(id="fng-data", data=fng_df),
         #dcc.Store(id="mrkt_df-data", data=mrkt_df),
+        
     
-        dcc.Location(id='url', refresh=False),
+        
         
         dbc.Container(
             [
@@ -251,6 +266,11 @@ def display_page(pathname):
         return btc_log_reg.layout
     elif pathname == '/mrkt_total_log_reg':
         return mrkt_total_log_reg.layout
+    elif pathname == '/ethbtc_risk':
+        return ethbtc_risk.layout
+    elif pathname == '/ada_risk':
+        return ada_risk.layout
+  
 
     else:
         return '404'
